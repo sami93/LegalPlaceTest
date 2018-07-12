@@ -1,0 +1,218 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div id="bg">
+            <img src="../../assets/img/todo4.jpg"  alt=""/>
+        </div>
+     <!--   <particles [params]="myParams" [style]="myStyle" [width]="width" [height]="height"></particles> -->
+        <h1 style="color:darkorange;font-weight: 400" align="center">
+            <teximate [text]="text" [effect]="effectOptions" [hover]="hoverOptions" style=" font-family: 'Times New Roman', Times, serif;     font-size: 125%;"></teximate>
+        </h1>
+
+
+
+
+        <div class="container mat-elevation-z8">
+            <div class="row">
+                <div class="col-sm-11">
+                    <div class="form">
+                        <mat-form-field  style=" font-weight: 600">
+                            <input matInput #filter type="text" >
+                            <mat-placeholder class="placeholder" style=" font-weight: 600">Recherche des Todos par Key ou par Title ou par description</mat-placeholder>
+
+                        </mat-form-field>
+                    </div>
+
+                    <mat-table #table [dataSource]="dataSource" matSort class="mat-cell">
+
+                        <!--- Note that these columns can be defined in any order.
+                              The actual rendered columns are set as a property on the row definition" -->
+
+                        <!-- ID Column -->
+                        <ng-container matColumnDef="Key">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>Key</mat-header-cell>
+                            <mat-cell *matCellDef="let row">{{row.Key}}</mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="title">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>title</mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.title}}</mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="description" layout-align="center center">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>description</mat-header-cell>
+                            <mat-cell *matCellDef="let row" layout-align="center center"> {{row.description}}</mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="dueDate">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>dueDate</mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.dueDate}}</mat-cell>
+                        </ng-container>
+
+       <ng-container matColumnDef="checkOff">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>checkOff</mat-header-cell>
+                            <mat-cell *matCellDef="let row"> <mat-slide-toggle (change)="onChange($event, row)" [checked]="row.checkOff" ></mat-slide-toggle> </mat-cell>
+                        </ng-container>
+
+
+                        <!-- actions -->
+                        <ng-container matColumnDef="actions">
+                            <mat-header-cell *matHeaderCellDef>
+                                <button mat-icon-button color="primary" data-toggle="modal" data-target="#myModal">
+                                    <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
+                                </button>
+                            </mat-header-cell>
+
+                            <mat-cell *matCellDef="let row; let i=index;">
+
+                                <button mat-icon-button color="accent" (click)="startEdit(i, row)"
+                                        matTooltip="Editer {{row.title}}" [matTooltipPosition]="'above'">
+                                    <mat-icon aria-label="Edit" class="white-icon">edit</mat-icon>
+                                </button>
+
+                                <button mat-icon-button color="accent" (click)="deleteItem(i, row)"
+                                        matTooltip="Supprimer {{row.title}}" [matTooltipPosition]="'above'">
+                                    <mat-icon aria-label="Delete" class="white-icon">delete</mat-icon>
+                                </button>
+                            </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                    </mat-table>
+
+
+                    <div class="no-results" [style.display]="dataSource.renderedData.length == 0 ? '' : 'none'">
+                        No results
+                    </div>
+
+                    <mat-paginator #paginator
+                                   [length]="dataSource.filteredData.length"
+                                   [pageIndex]="0"
+                                   [pageSize]="10"
+                                   [pageSizeOptions]="[5, 10, 25, 100]">
+                    </mat-paginator>
+                </div>
+
+                <div class="modal fade" id="myModal" role="dialog">
+                    <div class="modal-dialog" role="document">
+
+                        <!-- Modal content-->
+                        <form [formGroup]="addDataSetForm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <div id="banner"><img src="assets/img/lPpopup.png"></div>
+                                    <div class="main-contents">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <div class="card">
+                                                        <div class="card-header" data-background-color=" background-color: orange">
+                                                            <h4 class="title" ><i class="fa fa-plus-circle"></i> Ajouter
+                                                                un nouveau Todo</h4>
+                                                            <p class="category" style="color: blanchedalmond">Compléter toutes les informations</p>
+                                                        </div>
+
+
+                                                        <table class="table table-bordered   ">
+                                                            <tbody>
+
+                                                            <tr>
+                                                                <div class="form-group">
+
+                                                                    <td><label for="title"><b><i
+                                                                            class="fa fa-user-secret "
+                                                                            aria-hidden="true"> title:</i>
+                                                                    </b></label></td>
+                                                                    <td>
+                                                                        <input class="form-control" id="title"
+                                                                               type="text" name="title"
+                                                                               formControlName="title"
+                                                                               placeholder="title"
+                                                                        >
+
+
+                                                                </div>
+                                                            </tr>
+                                                            <tr>
+
+                                                                <div class="form-group">
+
+                                                                    <td><label for="description"><b><i class="fa fa-user-plus "
+                                                                                                 aria-hidden="true">
+                                                                        description:</i> </b></label></td>
+
+
+                                                                    <td>
+
+                                                                        <input class="form-control" id="description"
+                                                                               type="text" name="description"
+                                                                               formControlName="description"
+                                                                               placeholder="description">
+                                                                    </td>
+                                                                </div>
+
+
+                                                            </tr>
+
+                                                            <tr>
+
+                                                                <div class="form-group">
+
+                                                                    <td><label for="dueDate"><b><i class="fa fa-user-plus "
+                                                                                                    aria-hidden="true">
+                                                                        dueDate:</i> </b></label></td>
+
+
+                                                                    <td>
+
+                                                                        <input class="form-control" id="dueDate"
+                                                                               type="date" name="dueDate"
+                                                                               formControlName="dueDate"
+                                                                               placeholder="dueDate">
+                                                                    </td>
+                                                                </div>
+
+
+                                                            </tr>
+
+
+
+
+
+                                                            </tbody>
+                                                        </table>
+
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="modal-body">
+
+
+                                </div>
+
+                                <div class="modal-footer">
+
+
+                                    <!--   <button type="btn btn-primary" class="btn btn-default" data-dismiss="modal"><i class="fa fa-floppy-o"></i> Close</button> -->
+                                    <button class="btn btn-success" type="submit" [disabled]="!addDataSetForm.valid"
+                                            (click)="addDataSet()" data-dismiss="modal"><i class="fa fa-plus"></i> Ajouter
+                                    </button>
+
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
